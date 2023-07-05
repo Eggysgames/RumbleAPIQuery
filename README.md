@@ -1,6 +1,6 @@
 # Rumble API
 
-Used in Unity to drop and drag in games and grab the URL that your Unity game is embedded into. Then we manually query the string by pulling out our 3 variables and then send the code accordingly to the URL as a json.
+Used in Unity, a class used in games to grab the URL that your Unity game is embedded into. Then we manually query the string by pulling out our 3 variables and then send the code accordingly to the URL as a json.
 
 
 # Env
@@ -16,6 +16,8 @@ Used in Unity to drop and drag in games and grab the URL that your Unity game is
 - Time
 
 # Customize and Use
+
+Drag the RumbleAPI.cs class onto a prefab on screen, preferably one that has a DontDestroy class on it so it persists between scene changes.
 
 Change the levelsunlocked variable to one you have saved with playerprefs, or alternatively, delete this line and replace score with your score variable in game.
 
