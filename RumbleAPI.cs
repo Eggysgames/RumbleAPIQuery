@@ -6,120 +6,57 @@ using System;
 
 [System.Serializable]
 public class StatisticsData {
-    public string session_id;
-    public int score;
-    public float session_duration;
+    public string roomId;
+    public class MetaData {
+        public int level_completed;
+        public int stars_won;
+        public int userId;
+    }
+    public MetaData meta_data;
 }
 
 public class RumbleAPI : MonoBehaviour {
-
-    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/game/updateStatistics";
-    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/game/updateStatistics";
-    private const string prodURL = "https://api.rumbleapp.gg/api/v1/game/updateStatistics";
-
+    private const string updateMatchDataURL = "https://api-stage.rumbleapp.gg/api/v1/game/developer/updateMatchData";
     private const string contentTypeHeader = "Content-Type";
     private const string jsonContentType = "application/json";
 
-    public string sessionID;
-    public int score;
-    public float sessionDuration;
-    public string env;
-
-    public float sendupdate = 800;
-
+    private int sendupdate = 0;
+    private float sessionDuration = 0f;
+    private int score = 0;
 
     public void ReportStatistics() {
+        // Example URL
+        string currentURL = "https://gameserver.rumbleapp.gg/RumbleWebGL4/index.html?roomDetails=eyJyb29tSWQiOiI1MjU0XzEwNDYiLCJtYXhQbGF5ZXJzIjo0LCJtaW5QbGF5ZXJzIjoyLCJtYXhXYWl0IjoxNSwicm91bmRzIjoxLCJ0ZXh0IjoicGxheV9hZ2FpbiIsImFsbG93Qm90cyI6dHJ1ZSwidXNlciI6eyJuYW1lIjoiNzYwWFhYWDc3NCIsInBob3RvIjoiaHR0cHM6Ly9hc3NldHMtZGV2LnJ1bWJsZWFwcC5nZy9hdmF0YXJzX21hc3Rlci9hdmF0YXJfMS5wbmciLCJzdWIiOiIyMTAifX0=&session_id=fd4d0e21-6362-4a39-9e02-6127a1fece24&env=dev&source=cutysvcv167t63t4&gamingEnv=development";
 
-
-        // Set the appropriate URL based on the environment
-        string url;
-
-        string currentURL = Application.absoluteURL;
-
-        //Testing URL
-        //string currentURL = "https://gameserver.rumbleapp.gg/RumbleWebGLv2/index.html?session_id=12c7e0b8-e38e-4f72-9a1c-6e869d630046&env=dev&source=appvbh756246h";
-
-        // Parse the URL
+        // Extract the room details from the URL
         Uri uri = new Uri(currentURL);
+        string encodedRoomDetails = uri.Query.Substring(uri.Query.IndexOf('=') + 1);
+        byte[] roomDetailsBytes = Convert.FromBase64String(encodedRoomDetails);
+        string decodedRoomDetails = System.Text.Encoding.UTF8.GetString(roomDetailsBytes);
 
-        // Get the query parameters
-        string query = uri.Query;
+        // Parse the room details JSON
+        StatisticsData statisticsData = JsonUtility.FromJson<StatisticsData>(decodedRoomDetails);
 
-        // Find the starting index of the session ID
-        int startIndex = query.IndexOf("session_id=") + 11;
+        // Set the room ID and user ID
+        string roomId = statisticsData.roomId;
+        int userId = statisticsData.meta_data.userId;
 
-        // Find the ending index of the session ID
-        int endIndex = query.IndexOf('&', startIndex);
+        // Update the meta data
+        statisticsData.meta_data.level_completed = 2;
+        statisticsData.meta_data.stars_won = 1;
 
-        // If the '&' character is not found, use the length of the query
-        if (endIndex == -1)
-            endIndex = query.Length;
-
-        // Extract the session ID substring
-        sessionID = query.Substring(startIndex, endIndex - startIndex);
-
-
-
-        string envValue = "";
-
-        if (!string.IsNullOrEmpty(uri.Query)) {
-            // Remove the leading '?' character from the query string
-            string queryString = uri.Query.Substring(1);
-
-            // Split the query string into key-value pairs
-            string[] queryParams = queryString.Split('&');
-
-            // Loop through the key-value pairs and extract the value of the env variable
-            foreach (string param in queryParams) {
-                string[] keyValue = param.Split('=');
-                string key = keyValue[0];
-                string value = keyValue[1];
-
-                if (key == "env") {
-                    envValue = value;
-                    break;
-                }
-            }
-        }
-
-        // Update the env variable in your code with the extracted value
-        env = envValue;
-
-        switch (env) {
-            case "dev":
-                url = devURL;
-                break;
-            case "stage":
-                url = stageURL;
-                break;
-            case "prod":
-                url = prodURL;
-                break;
-            default:
-                Debug.LogError("Invalid environment specified");
-                return;
-        }
-
-        StartCoroutine(SendStatistics(url));
-    }
-
-
-    private IEnumerator SendStatistics(string url) {
-
-        // Create the statistics data object
-        StatisticsData statisticsData = new StatisticsData();
-        statisticsData.session_id = sessionID;
-        statisticsData.score = score;
-        statisticsData.session_duration = sessionDuration;
-
-        // Serialize the statistics data to JSON
+        // Serialize the updated statistics data to JSON
         string jsonData = JsonUtility.ToJson(statisticsData);
 
-        Debug.Log("URL: " + url);
-        Debug.Log("JSON Data: " + jsonData);
+        StartCoroutine(SendMatchData(roomId, userId, jsonData));
+    }
+
+    private IEnumerator SendMatchData(string roomId, int userId, string jsonData) {
+        // Create the request payload
+        string requestPayload = $"{{ \"meta_data\": {jsonData}, \"room_id\": \"{roomId}\" }}";
 
         // Create the UnityWebRequest
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        UnityWebRequest request = UnityWebRequest.Post(updateMatchDataURL, requestPayload);
 
         // Set the content type header
         request.SetRequestHeader(contentTypeHeader, jsonContentType);
@@ -127,17 +64,12 @@ public class RumbleAPI : MonoBehaviour {
         // Set the authorization header
         request.SetRequestHeader("Authorization", "bradley123!@#");
 
-        // Attach the JSON payload to the request body
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-
         // Send the request
         yield return request.SendWebRequest();
 
         // Check for errors
         if (request.result != UnityWebRequest.Result.Success) {
-            Debug.LogError("Failed to send statistics. Error: " + request.error);
+            Debug.LogError("Failed to send match data. Error: " + request.error);
             if (request.downloadHandler != null) {
                 byte[] responseBody = request.downloadHandler.data;
                 string responseBodyText = System.Text.Encoding.UTF8.GetString(responseBody);
@@ -145,27 +77,24 @@ public class RumbleAPI : MonoBehaviour {
             }
         }
         else {
-            Debug.Log("Statistics sent successfully");
+            Debug.Log("Match data sent successfully");
             Debug.Log("Response Data: " + request.downloadHandler.text);
         }
     }
 
-
     private void Update() {
 
-        Debug.Log(sessionID);
+
 
         sendupdate++;
-
         sessionDuration += Time.deltaTime;
-
         score = PlayerPrefs.GetInt("Levelsunlocked");
 
         if (sendupdate > 900) {
             sessionDuration = Mathf.RoundToInt(sessionDuration);
             ReportStatistics();
             sendupdate = 0;
-            Debug.Log(sessionDuration);
+            //Debug.Log(sessionDuration);
         }
     }
 }
