@@ -31,3 +31,10 @@ Replace 800 with a start timer int before it hits 900 to send first data
 
 ``` public float sendupdate = 800;```
 
+# Updates
+
+- Added support for nested variables and nested json (Needs Newtonsoft.Json or it won't support nested json in Unity. Amazing bug there that was PAINFUL HOURS TO FIX!
+
+- Decodes base64 and grabs out variables
+
+- Send our decoded base64 into a static variable to be used for playerprefabs saving by Unity that will adapt to rooms
