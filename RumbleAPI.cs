@@ -28,6 +28,7 @@ public class StatisticsData {
     //public int score;
     //public float session_duration;
     public string roomId;
+    //public string sessionID;
 
     public MetaData meta_data;
     [System.Serializable] // This attribute is required by Newtonsoft.Json
@@ -41,9 +42,9 @@ public class StatisticsData {
 
 public class RumbleAPI : MonoBehaviour {
 
-    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/game/updateStatistics";
-    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/game/updateStatistics";
-    private const string prodURL = "https://api.rumbleapp.gg/api/v1/game/updateStatistics";
+    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/game/updateMatchStats";
+    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/game/updateMatchStats";
+    private const string prodURL = "https://api.rumbleapp.gg/api/v1/game/updateMatchStats";
 
     private const string contentTypeHeader = "Content-Type";
     private const string jsonContentType = "application/json";
@@ -64,8 +65,8 @@ public class RumbleAPI : MonoBehaviour {
     public string base64;
     public int holder;
     public int maxholder;
-    public void ReportStatistics() {
 
+    public void UpdateMatchData() {
 
         // Set the appropriate URL based on the environment
         string url;
@@ -195,12 +196,14 @@ public class RumbleAPI : MonoBehaviour {
 
         StatisticsData statisticsData = new StatisticsData();
         // Set other fields in the statisticsData object
+        //statisticsData.sessionID = sessionID;
         statisticsData.roomId = roomId;
 
         statisticsData.meta_data = new StatisticsData.MetaData();
         statisticsData.meta_data.level_completed = level_completed;
         statisticsData.meta_data.stars_won = stars_won;
         statisticsData.meta_data.userId = userId;
+
 
         string jsonData = JsonConvert.SerializeObject(statisticsData);
 
@@ -280,7 +283,7 @@ public class RumbleAPI : MonoBehaviour {
             ////////////////////////////////
             ///
             sessionDuration = Mathf.RoundToInt(sessionDuration);
-            ReportStatistics();
+            UpdateMatchData();
             sendupdate = 0;
             //Debug.Log(sessionDuration);
         }
