@@ -117,13 +117,8 @@ public class RumbleAPI : MonoBehaviour {
         roomId = roomData.roomId;
         userId = roomData.user.sub;
 
-        
-
-
 
         ///////////////////////////////////////////////////////////
-
-
 
 
         ///GRAB SESSIONID OUT OF THE URL//////////////////////
@@ -211,11 +206,9 @@ public class RumbleAPI : MonoBehaviour {
         Debug.Log(userId);
 
         ///Grab roomID from the extracted base64 code above and set as roomID
-        //grab userID from the extracted base64 code above and set as roomID
+        //grab sub from the extracted base64 code above and set as userId
         //Set levels completed as myplayerprefs
         ///Set stars as my playerprefabs
-
-
 
 
         Debug.Log("URL: " + url);
