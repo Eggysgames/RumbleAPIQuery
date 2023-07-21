@@ -31,6 +31,10 @@ Replace 800 with a start timer int before it hits 900 to send first data
 
 ``` public float sendupdate = 800;```
 
+# Customize and Use 2
+
+For single use it has been moved to CallOnce() and this is called upon completion of a level
+
 # Updates
 
 - Added support for nested variables and nested json (Needs Newtonsoft.Json or it won't support nested json in Unity. Amazing bug there that was PAINFUL HOURS TO FIX!
