@@ -4,6 +4,7 @@ using System.Collections;
 using TMPro;
 using System;
 using Newtonsoft.Json;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 
@@ -42,10 +43,12 @@ public class StatisticsData {
 
 public class RumbleAPI : MonoBehaviour {
 
-    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/game/updateMatchStats";
-    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/game/updateMatchStats";
-    private const string prodURL = "https://api.rumbleapp.gg/api/v1/game/updateMatchStats";
+    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/developer/updateMatchData";
+    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/developer/updateMatchData";
+    private const string prodURL = "https://api.rumbleapp.gg/api/v1/developer/updateMatchData";
 
+
+   
     private const string contentTypeHeader = "Content-Type";
     private const string jsonContentType = "application/json";
 
@@ -65,6 +68,8 @@ public class RumbleAPI : MonoBehaviour {
     public string base64;
     public int holder;
     public int maxholder;
+
+    private string scenename;
 
     public void UpdateMatchData() {
 
@@ -117,8 +122,13 @@ public class RumbleAPI : MonoBehaviour {
         roomId = roomData.roomId;
         userId = roomData.user.sub;
 
+        
+
+
 
         ///////////////////////////////////////////////////////////
+
+
 
 
         ///GRAB SESSIONID OUT OF THE URL//////////////////////
@@ -206,9 +216,11 @@ public class RumbleAPI : MonoBehaviour {
         Debug.Log(userId);
 
         ///Grab roomID from the extracted base64 code above and set as roomID
-        //grab sub from the extracted base64 code above and set as userId
+        //grab userID from the extracted base64 code above and set as roomID
         //Set levels completed as myplayerprefs
         ///Set stars as my playerprefabs
+
+
 
 
         Debug.Log("URL: " + url);
@@ -246,27 +258,60 @@ public class RumbleAPI : MonoBehaviour {
         }
     }
 
+    public void CallOnce() {
+
+        
+            
+            
+
+        scenename = SceneManager.GetActiveScene().name;
+        int intholder = int.Parse(scenename);
+
+        holder = PlayerPrefs.GetInt(scenename + MyStaticClass.base64_2stars);
+
+        //Debug.Log(PlayerPrefs.GetInt(scenename + MyStaticClass.base64_2stars));
+
+
+        stars_won = holder.ToString();
+
+        int levelholder = PlayerPrefs.GetInt(MyStaticClass.base64levelsunlocked);
+        level_completed = levelholder.ToString();
+
+        //Debug.Log(level_completed);
+
+        holder = 0;
+        maxholder = 0;
+        ////////////////////////////////
+        ///
+        sessionDuration = Mathf.RoundToInt(sessionDuration);
+        UpdateMatchData();
+        
+
+    }
+
 
     private void Update() {
 
         //Debug.Log(sessionID);
+
+        
 
         sendupdate++;
 
         sessionDuration += Time.deltaTime;
 
         ///Set the levels to a base64 unlock
-        int levelholder = PlayerPrefs.GetInt(MyStaticClass.base64levelsunlocked);
-        level_completed = levelholder.ToString();
+        //int levelholder = PlayerPrefs.GetInt(MyStaticClass.base64levelsunlocked);
+        //level_completed = levelholder.ToString();
 
 
-        if (sendupdate > 900) {
+        /*if (sendupdate > 900) {
 
             ///Update Stars Once
-            for (int i = 1; i < 41; i++) {
+            //for (int i = 1; i < 41; i++) {
                 holder = PlayerPrefs.GetInt(i + MyStaticClass.base64_2stars);
-                maxholder += holder;
-            }
+                //maxholder += holder;
+            //}
 
             //Debug.Log(holder);
             stars_won = maxholder.ToString();
@@ -279,6 +324,6 @@ public class RumbleAPI : MonoBehaviour {
             UpdateMatchData();
             sendupdate = 0;
             //Debug.Log(sessionDuration);
-        }
+        }*/
     }
 }
