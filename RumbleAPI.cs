@@ -25,11 +25,7 @@ public class RoomData {
     }
 }
 public class StatisticsData {
-    //public string session_id;
-    //public int score;
-    //public float session_duration;
-    public string roomId;
-    //public string sessionID;
+    public string room_id;
 
     public MetaData meta_data;
     [System.Serializable] // This attribute is required by Newtonsoft.Json
@@ -43,10 +39,9 @@ public class StatisticsData {
 
 public class RumbleAPI : MonoBehaviour {
 
-    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/developer/updateMatchData";
-    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/developer/updateMatchData";
-    private const string prodURL = "https://api.rumbleapp.gg/api/v1/developer/updateMatchData";
-
+    private const string devURL = "https://api-devnew.rumbleapp.gg/api/v1/game/developer/updateMatchData";
+    private const string stageURL = "https://api-stage.rumbleapp.gg/api/v1/game/developer/updateMatchData";
+    private const string prodURL = "https://api.rumbleapp.gg/api/v1/game/developer/updateMatchData";
 
    
     private const string contentTypeHeader = "Content-Type";
@@ -122,12 +117,9 @@ public class RumbleAPI : MonoBehaviour {
         roomId = roomData.roomId;
         userId = roomData.user.sub;
 
-        
-
 
 
         ///////////////////////////////////////////////////////////
-
 
 
 
@@ -202,7 +194,7 @@ public class RumbleAPI : MonoBehaviour {
         StatisticsData statisticsData = new StatisticsData();
         // Set other fields in the statisticsData object
         //statisticsData.sessionID = sessionID;
-        statisticsData.roomId = roomId;
+        statisticsData.room_id = roomId;
 
         statisticsData.meta_data = new StatisticsData.MetaData();
         statisticsData.meta_data.level_completed = level_completed;
@@ -214,15 +206,6 @@ public class RumbleAPI : MonoBehaviour {
 
         //Debug.Log(roomId);
         Debug.Log(userId);
-
-        ///Grab roomID from the extracted base64 code above and set as roomID
-        //grab userID from the extracted base64 code above and set as roomID
-        //Set levels completed as myplayerprefs
-        ///Set stars as my playerprefabs
-
-
-
-
         Debug.Log("URL: " + url);
         Debug.Log("JSON Data: " + jsonData);
 
@@ -260,21 +243,17 @@ public class RumbleAPI : MonoBehaviour {
 
     public void CallOnce() {
 
-        
-            
-            
-
         scenename = SceneManager.GetActiveScene().name;
         int intholder = int.Parse(scenename);
 
         holder = PlayerPrefs.GetInt(scenename + MyStaticClass.base64_2stars);
-
         //Debug.Log(PlayerPrefs.GetInt(scenename + MyStaticClass.base64_2stars));
 
 
         stars_won = holder.ToString();
 
-        int levelholder = PlayerPrefs.GetInt(MyStaticClass.base64levelsunlocked);
+        //int levelholder = PlayerPrefs.GetInt(MyStaticClass.base64levelsunlocked);
+        int levelholder = intholder;
         level_completed = levelholder.ToString();
 
         //Debug.Log(level_completed);
@@ -286,44 +265,15 @@ public class RumbleAPI : MonoBehaviour {
         sessionDuration = Mathf.RoundToInt(sessionDuration);
         UpdateMatchData();
         
-
     }
 
 
     private void Update() {
 
         //Debug.Log(sessionID);
-
-        
-
         sendupdate++;
 
         sessionDuration += Time.deltaTime;
 
-        ///Set the levels to a base64 unlock
-        //int levelholder = PlayerPrefs.GetInt(MyStaticClass.base64levelsunlocked);
-        //level_completed = levelholder.ToString();
-
-
-        /*if (sendupdate > 900) {
-
-            ///Update Stars Once
-            //for (int i = 1; i < 41; i++) {
-                holder = PlayerPrefs.GetInt(i + MyStaticClass.base64_2stars);
-                //maxholder += holder;
-            //}
-
-            //Debug.Log(holder);
-            stars_won = maxholder.ToString();
-
-            holder = 0;
-            maxholder = 0;
-            ////////////////////////////////
-            ///
-            sessionDuration = Mathf.RoundToInt(sessionDuration);
-            UpdateMatchData();
-            sendupdate = 0;
-            //Debug.Log(sessionDuration);
-        }*/
     }
 }
