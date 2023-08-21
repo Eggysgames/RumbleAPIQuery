@@ -75,7 +75,6 @@ public class RumbleAPI : MonoBehaviour {
         //Testing URL
         //string currentURL = "https://gameserver.rumbleapp.gg/RumbleWebGL4/index.html?roomDetails=eyJyb29tSWQiOiI1MjU0XzEwNDYiLCJtYXhQbGF5ZXJzIjo0LCJtaW5QbGF5ZXJzIjoyLCJtYXhXYWl0IjoxNSwicm91bmRzIjoxLCJ0ZXh0IjoicGxheV9hZ2FpbiIsImFsbG93Qm90cyI6dHJ1ZSwidXNlciI6eyJuYW1lIjoiNzYwWFhYWDc3NCIsInBob3RvIjoiaHR0cHM6Ly9hc3NldHMtZGV2LnJ1bWJsZWFwcC5nZy9hdmF0YXJzX21hc3Rlci9hdmF0YXJfMS5wbmciLCJzdWIiOiIyMTAifX0=&session_id=fd4d0e21-6362-4a39-9e02-6127a1fece24&env=dev&source=cutysvcv167t63t4&gamingEnv=development";
 
-
         ///GRAB THE BASE64 OUT URL AND CONVERT IT TO READABLE STUFF////////////
 
         // Parse the URL
@@ -107,6 +106,8 @@ public class RumbleAPI : MonoBehaviour {
 
         Debug.Log("Base64 " + MyStaticClass.base64levelsunlocked);
         Debug.Log("Base642 " + MyStaticClass.base64_2stars);
+
+        roomDetails = roomDetails.Replace("%3D", "=");
 
         byte[] data = Convert.FromBase64String(roomDetails);
         string decodedString = System.Text.Encoding.UTF8.GetString(data);
